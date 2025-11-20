@@ -17,9 +17,6 @@ class NodeRegistryClass {
         const ctor = node_type ? this.get(node_type) : undefined;
         if (ctor === undefined) throw new Error(`Did you forget to register node type ${node_type}?\nData: ${data}`);
         const node = new ctor(data);
-        for (const child of data.children ?? []) {
-            node.add_child(this.create(child));
-        }
         return node;
     }
 

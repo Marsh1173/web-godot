@@ -56,7 +56,7 @@ export class Node {
         this.inner_children.push(node);
         node.parent = this;
 
-        if (this.root) {
+        if (this.root !== undefined) {
             node.inner_ready(this.root);
         }
     }

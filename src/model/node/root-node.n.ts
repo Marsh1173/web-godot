@@ -1,3 +1,4 @@
+import type { Game } from "../game/game";
 import { Node, type NodeScene } from "./node.n";
 
 export interface RootNodeScene extends NodeScene {
@@ -8,7 +9,7 @@ export class RootNode extends Node {
     public override parent: undefined = undefined;
     public override root: RootNode = this;
 
-    constructor(data: RootNodeScene) {
+    constructor(data: RootNodeScene, public readonly game: Game) {
         super(data);
     }
 
@@ -22,12 +23,9 @@ export class RootNode extends Node {
 
     // MARK: Class-specific serialization
     public override serialize(): RootNodeScene {
-        return {
-            ...super.serialize(),
-            type: "RootNode",
-        };
+        throw new Error("Tried to serialize a root node");
     }
     public static override deserialize(data: RootNodeScene): RootNode {
-        return new RootNode(data);
+        throw new Error("Tried to deserialize a root node");
     }
 }
