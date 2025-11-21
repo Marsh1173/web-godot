@@ -1,26 +1,31 @@
 import { get_random_node_id } from "../utils/get-random-node-id";
-import { NodeRegistry } from "./node-registry";
+import { NodeRegistry, type NodeRegistration } from "./node-registry";
 import type { RootNode } from "./root-node.n";
 
-export interface NodeScene {
+export interface GameNodeScene {
     type: string;
     name: string;
     node_id?: number;
-    children?: NodeScene[];
+    children?: GameNodeScene[];
 }
 
-export class Node {
+export const GameNodeRegistration: NodeRegistration = {
+    name: "Node",
+    validate_data_and_deserialize: (data: unknown) => new GameNode(data as GameNodeScene),
+};
+
+export class GameNode {
     public name: string;
     public node_id: number;
-    private readonly inner_children: Node[] = [];
-    public get children(): ReadonlyArray<Node> {
+    private readonly inner_children: GameNode[] = [];
+    public get children(): ReadonlyArray<GameNode> {
         return this.inner_children;
     }
 
-    public parent: Node | undefined = undefined;
+    public parent: GameNode | undefined = undefined;
     public root: RootNode | undefined = undefined;
 
-    constructor(data: NodeScene) {
+    constructor(data: GameNodeScene) {
         this.name = data.name;
         this.node_id = data.node_id ?? get_random_node_id();
 
@@ -38,7 +43,7 @@ export class Node {
 
     // MARK: Children
 
-    public add_child(node: Node) {
+    public add_child(node: GameNode) {
         // Cannot add a child node that already has a parent.
         if (node.parent !== undefined) {
             throw new Error(`Node ${node.name} attempted to be added to ${this.name} but already had a parent.`);
@@ -61,7 +66,7 @@ export class Node {
         }
     }
 
-    public remove_child(node: Node) {
+    public remove_child(node: GameNode) {
         if (node.parent !== this) {
             return;
         }
@@ -83,7 +88,7 @@ export class Node {
         }
     }
 
-    public find_child(name: string): Node | undefined {
+    public find_child(name: string): GameNode | undefined {
         return this.inner_children.find((node) => node.name === name);
     }
 
@@ -168,15 +173,17 @@ export class Node {
     }
 
     // MARK: Class-specific serialization
-    public serialize(): NodeScene {
-        return {
-            type: "Node",
+    public serialize(): GameNodeScene {
+        return GameNode.create_scene({
             node_id: this.node_id,
             name: this.name,
             children: this.children.map((child) => child.serialize()),
-        };
+        });
     }
-    public static deserialize(data: NodeScene) {
-        return new Node(data);
+    public static create_scene(data: Omit<GameNodeScene, "type">): GameNodeScene {
+        return {
+            ...data,
+            type: GameNodeRegistration.name,
+        };
     }
 }

@@ -1,15 +1,11 @@
 import type { Game } from "../game/game";
-import { Node, type NodeScene } from "./node.n";
+import { GameNode, type GameNodeScene } from "./node.n";
 
-export interface RootNodeScene extends NodeScene {
-    type: "RootNode";
-}
-
-export class RootNode extends Node {
+export class RootNode extends GameNode {
     public override parent: undefined = undefined;
     public override root: RootNode = this;
 
-    constructor(data: RootNodeScene, public readonly game: Game) {
+    constructor(data: GameNodeScene, public readonly game: Game) {
         super(data);
     }
 
@@ -19,13 +15,5 @@ export class RootNode extends Node {
     }
     public override inner_physics_process(delta: number): void {
         super.inner_physics_process(delta);
-    }
-
-    // MARK: Class-specific serialization
-    public override serialize(): RootNodeScene {
-        throw new Error("Tried to serialize a root node");
-    }
-    public static override deserialize(data: RootNodeScene): RootNode {
-        throw new Error("Tried to deserialize a root node");
     }
 }

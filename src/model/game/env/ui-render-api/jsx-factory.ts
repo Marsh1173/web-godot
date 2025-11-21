@@ -1,17 +1,18 @@
-// Universal h function that works on both server and browser
-
 // JSX Namespace for TypeScript
 declare global {
     namespace JSX {
         interface IntrinsicElements {
             [key: string]: any;
+            style: {
+                [key: string]: string;
+            };
         }
-        type Element = Node | DocumentFragment | undefined;
+        type Element = Node | DocumentFragment;
     }
 }
 
 // 1. The Factory Function
-export function JsxFactory(tag: any, props: any, ...children: any[]) {
+export function JsxFactory(tag: string, props: any, ...children: (HTMLElement | string)[]) {
     // Check if we're in a browser environment
     if (typeof document === "undefined") {
         // Server-side: return undefined (no DOM operations)
@@ -19,9 +20,9 @@ export function JsxFactory(tag: any, props: any, ...children: any[]) {
     }
 
     // A. Handling Functional Components (e.g., <MyComponent />)
-    if (typeof tag === "function") {
-        return tag({ ...props, children });
-    }
+    // if (typeof tag === "function") {
+    //     return tag({ ...props, children });
+    // }
 
     // B. Handling HTML Tags (e.g., <div />)
     const element = document.createElement(tag);
@@ -60,14 +61,10 @@ export const JsxFragment = (props: any) => {
     return fragment;
 };
 
-// Helper to handle text nodes and nested arrays
-function appendChild(parent: Node, child: any) {
-    if (Array.isArray(child)) {
-        child.forEach((nested) => appendChild(parent, nested));
-    } else if (typeof child === "string" || typeof child === "number") {
+function appendChild(parent: Node, child: HTMLElement | string) {
+    if (typeof child === "string") {
         parent.appendChild(document.createTextNode(String(child)));
-    } else if (child instanceof Node) {
+    } else {
         parent.appendChild(child);
     }
-    // Ignore null/undefined/boolean
 }
