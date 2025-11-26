@@ -1,3 +1,4 @@
 export interface UiRenderApi {
-    append_element_to_root: (el: () => Node) => void;
+    create_element: (tag: string, set_props: (el: HTMLElement) => void, parent_id?: string) => string;
+    remove_element: (id: string) => void;
 }

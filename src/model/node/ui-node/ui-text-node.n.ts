@@ -1,4 +1,3 @@
-import { JsxFactory } from "src/model/game/env/ui-render-api/jsx-factory";
 import { type NodeRegistration } from "../node-registry";
 import type { RootNode } from "../root-node.n";
 import { UiNode, type UiNodeScene } from "./ui-node.n";
@@ -14,16 +13,20 @@ export const UiTextNodeRegistration: NodeRegistration = {
 
 export class UiTextNode extends UiNode {
     public text: string;
-    public override readonly element: () => Node = () => (
-        <span>
-            <div style={{ color: "red" }}>asdf</div>
-            {this.text}
-        </span>
-    );
 
     constructor(data: UiTextNodeScene) {
         super(data);
         this.text = data.text;
+    }
+
+    protected override create_element(root_node: RootNode, parent_id: string | undefined): string {
+        return root_node.game.ui_render_api.create_element(
+            "span",
+            (el: HTMLElement) => {
+                el.innerText = this.text;
+            },
+            parent_id
+        );
     }
 
     // MARK: Class-specific serialization

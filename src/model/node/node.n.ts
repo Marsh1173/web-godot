@@ -35,7 +35,7 @@ export class GameNode {
                     const instantiated_node = NodeRegistry.create(child);
                     this.add_child(instantiated_node);
                 } catch (e) {
-                    console.error(`Could not instantiate node's child: ${child}`);
+                    console.error(`Could not instantiate node's child`, e, child);
                 }
             }
         }
@@ -58,6 +58,13 @@ export class GameNode {
             parent = parent.parent;
         }
 
+        // Node cannot have two children with the same name.
+        if (this.children.find((child) => child.name === node.name) !== undefined) {
+            throw new Error(
+                `Node ${node.name} attempted to be added to ${this.name} but this node already had a child with the same name.`
+            );
+        }
+
         this.inner_children.push(node);
         node.parent = this;
 
@@ -77,7 +84,7 @@ export class GameNode {
         }
 
         if (this.root) {
-            node.inner_before_leave_scene_tree();
+            node.inner_before_leave_scene_tree(this.root);
         }
 
         this.inner_children.splice(child_index, 1);
@@ -116,12 +123,12 @@ export class GameNode {
      *
      * This method is meant to be overriden by inheriting classes.
      */
-    public _before_leave_scene_tree() {}
-    private inner_before_leave_scene_tree() {
-        this._before_leave_scene_tree();
+    public _before_leave_scene_tree(root_node: RootNode) {}
+    private inner_before_leave_scene_tree(root_node: RootNode) {
+        this._before_leave_scene_tree(root_node);
 
         for (const child of this.children) {
-            child.inner_before_leave_scene_tree();
+            child.inner_before_leave_scene_tree(root_node);
         }
     }
 

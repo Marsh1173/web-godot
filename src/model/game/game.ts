@@ -1,7 +1,7 @@
 import { NodeRegistry, type NodeRegistration } from "../node/node-registry";
-import { GameNodeRegistration, GameNode, type GameNodeScene } from "../node/node.n";
+import { GameNodeRegistration, type GameNodeScene } from "../node/node.n";
 import { RootNode } from "../node/root-node.n";
-import { UiNode, UiNodeRegistration } from "../node/ui-node/ui-node.n";
+import { UiContainerNodeRegistration } from "../node/ui-node/ui-container-node.n";
 import { UiTextNodeRegistration } from "../node/ui-node/ui-text-node.n";
 import type { GameEnvironmentApis } from "./env/game-env-apis";
 import type { UiRenderApi } from "./env/ui-render-api/ui-render-api";
@@ -9,8 +9,8 @@ import type { Ticker } from "./ticker/ticker";
 
 const DEFAULT_NODES_TO_REGISTER: NodeRegistration[] = [
     GameNodeRegistration,
-    UiNodeRegistration,
     UiTextNodeRegistration,
+    UiContainerNodeRegistration,
 ];
 
 export class Game {
